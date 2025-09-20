@@ -157,8 +157,8 @@
         const canvasRef = useRef<HTMLCanvasElement>(null);
 
         useEffect(() => {
-          if (canvasRef.current && (window as any).QRCode) {
-            (window as any).QRCode.toCanvas(
+          if (canvasRef.current && window.QRCode) {
+            window.QRCode.toCanvas(
               canvasRef.current,
               value,
               { width: size, margin: 1 },
@@ -251,8 +251,10 @@
         
         const stopCamera = () => {
             if (videoRef.current && videoRef.current.srcObject) {
-              const stream = videoRef.current.srcObject as MediaStream;
-              stream.getTracks().forEach(track => track.stop());
+              const stream = videoRef.current.srcObject;
+              if (stream && typeof (stream as any).getTracks === 'function') {
+                (stream as any).getTracks().forEach((track: any) => track.stop());
+              }
               videoRef.current.srcObject = null;
             }
         };
@@ -351,10 +353,10 @@
         const [shareUrl, setShareUrl] = useState<string | null>(null);
 
         useEffect(() => {
-          if (!isSharedView && photos.length > 0 && (window as any).lzString) {
+          if (!isSharedView && photos.length > 0 && window.lzString) {
             const photoData = photos.map(p => p.split(',')[1]);
             const joinedData = photoData.join('|');
-            const compressed = (window as any).lzString.compressToEncodedURIComponent(joinedData);
+            const compressed = window.lzString.compressToEncodedURIComponent(joinedData);
             const url = `${window.location.origin}${window.location.pathname}#preview&frame=${frameConfig.id}&photos=${compressed}`;
             setShareUrl(url);
           }
@@ -480,10 +482,10 @@
               const frameId = params.get('frame');
               const compressedPhotos = params.get('photos');
 
-              if (frameId && compressedPhotos && (window as any).lzString) {
+              if (frameId && compressedPhotos && window.lzString) {
                 const frame = FRAME_OPTIONS.find(f => f.id === frameId);
-                const decompressed = (window as any).lzString.decompressFromEncodedURIComponent(compressedPhotos);
-                const photos = decompressed.split('|').map((data: string) => `data:image/jpeg;base64,${data}`);
+                const decompressed = window.lzString.decompressFromEncodedURIComponent(compressedPhotos);
+                const photos = decompressed.split('|').map(data => `data:image/jpeg;base64,${data}`);
                 
                 if (frame && photos.length > 0) {
                   setSelectedFrame(frame);
