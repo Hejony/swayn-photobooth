@@ -42,30 +42,19 @@
       import ReactDOM from 'react-dom/client';
 
       // --- from types.ts ---
-      enum AppState {
-        SELECTING_FRAME = 'SELECTING_FRAME',
-        CAPTURING = 'CAPTURING',
-        PREVIEW = 'PREVIEW',
-      }
+      const AppState = {
+        SELECTING_FRAME: 'SELECTING_FRAME',
+        CAPTURING: 'CAPTURING',
+        PREVIEW: 'PREVIEW',
+      };
 
-      enum FrameType {
-        NORMAL = '일반 프레임',
-        SPECIAL = '스페셜 프레임',
-      }
-
-      interface FrameConfig {
-        id: string;
-        cuts: 1 | 2 | 4;
-        type: FrameType;
-        name: string;
-        layout: 'vertical' | 'grid';
-        frameClasses: string;
-        imageContainerClasses: string;
-        imageClasses: string;
-      }
+      const FrameType = {
+        NORMAL: '일반 프레임',
+        SPECIAL: '스페셜 프레임',
+      };
 
       // --- from constants.ts ---
-      const FRAME_OPTIONS: FrameConfig[] = [
+      const FRAME_OPTIONS = [
         {
           id: 'normal-4-grid',
           cuts: 4,
@@ -111,20 +100,20 @@
       const COUNTDOWN_SECONDS = 3;
 
       // --- from components/icons ---
-      const CameraIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+      const CameraIcon = (props) => (
         <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" >
           <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
           <circle cx="12" cy="13" r="3" />
         </svg>
       );
-      const DownloadIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+      const DownloadIcon = (props) => (
         <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" >
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
           <polyline points="7 10 12 15 17 10" />
           <line x1="12" y1="15" x2="12" y2="3" />
         </svg>
       );
-      const RetryIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+      const RetryIcon = (props) => (
         <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" >
           <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
           <path d="M3 3v5h5" />
@@ -132,14 +121,14 @@
           <path d="M21 21v-5h-5" />
         </svg>
       );
-      const FrameIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+      const FrameIcon = (props) => (
         <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" >
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
           <line x1="3" y1="9" x2="21" y2="9" />
           <line x1="9" y1="21" x2="9" y2="9" />
         </svg>
       );
-      const QrCodeIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+      const QrCodeIcon = (props) => (
         <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" >
           <rect x="3" y="3" width="7" height="7" />
           <rect x="14" y="3" width="7" height="7" />
@@ -153,8 +142,8 @@
       );
 
       // --- from components/QRCode.tsx ---
-      const QRCode: React.FC<{ value: string; size?: number; }> = ({ value, size = 256 }) => {
-        const canvasRef = useRef<HTMLCanvasElement>(null);
+      const QRCode = ({ value, size = 256 }) => {
+        const canvasRef = useRef(null);
 
         useEffect(() => {
           if (canvasRef.current && window.QRCode) {
@@ -162,7 +151,7 @@
               canvasRef.current,
               value,
               { width: size, margin: 1 },
-              (error: any) => {
+              (error) => {
                 if (error) console.error('QRCode generation error:', error);
               }
             );
@@ -173,7 +162,7 @@
       };
 
       // --- from components/Header.tsx ---
-      const Header: React.FC = () => {
+      const Header = () => {
         return (
           <header className="bg-white shadow-md w-full p-4">
             <div className="container mx-auto flex flex-col items-center justify-center">
@@ -185,7 +174,7 @@
       };
 
       // --- from components/FrameSelector.tsx ---
-      const FramePreview: React.FC<{ frame: FrameConfig }> = ({ frame }) => {
+      const FramePreview = ({ frame }) => {
         const cuts = Array.from({ length: frame.cuts });
         return (
           <div className={`${frame.frameClasses} w-full h-full shadow-inner rounded-md bg-opacity-50`}>
@@ -198,7 +187,7 @@
         );
       };
       
-      const FrameSelector: React.FC<{ onFrameSelect: (frame: FrameConfig) => void; }> = ({ onFrameSelect }) => {
+      const FrameSelector = ({ onFrameSelect }) => {
         return (
           <div className="bg-white p-8 rounded-xl shadow-lg animate-fade-in">
             <h2 className="text-3xl font-bold text-center mb-2 text-brand-primary">프레임 선택</h2>
@@ -223,14 +212,14 @@
       };
       
       // --- from components/CameraView.tsx ---
-      const CameraView: React.FC<{ frameConfig: FrameConfig; onCaptureComplete: (photos: string[]) => void; }> = ({ frameConfig, onCaptureComplete }) => {
+      const CameraView = ({ frameConfig, onCaptureComplete }) => {
         const [photoCount, setPhotoCount] = useState(0);
-        const [countdown, setCountdown] = useState<number | null>(null);
+        const [countdown, setCountdown] = useState(null);
         const [isCapturing, setIsCapturing] = useState(false);
-        const [cameraError, setCameraError] = useState<string | null>(null);
-        const videoRef = useRef<HTMLVideoElement>(null);
-        const canvasRef = useRef<HTMLCanvasElement>(null);
-        const photosRef = useRef<string[]>([]);
+        const [cameraError, setCameraError] = useState(null);
+        const videoRef = useRef(null);
+        const canvasRef = useRef(null);
+        const photosRef = useRef([]);
 
         const startCamera = useCallback(async () => {
           try {
@@ -252,8 +241,8 @@
         const stopCamera = () => {
             if (videoRef.current && videoRef.current.srcObject) {
               const stream = videoRef.current.srcObject;
-              if (stream && typeof (stream as any).getTracks === 'function') {
-                (stream as any).getTracks().forEach((track: any) => track.stop());
+              if (stream && typeof stream.getTracks === 'function') {
+                stream.getTracks().forEach((track) => track.stop());
               }
               videoRef.current.srcObject = null;
             }
@@ -348,9 +337,9 @@
       };
 
       // --- from components/PhotoPreview.tsx ---
-      const PhotoPreview: React.FC<{ frameConfig: FrameConfig; photos: string[]; onRetry: () => void; isSharedView?: boolean; }> = ({ frameConfig, photos, onRetry, isSharedView = false }) => {
-        const photoStripRef = useRef<HTMLDivElement>(null);
-        const [shareUrl, setShareUrl] = useState<string | null>(null);
+      const PhotoPreview = ({ frameConfig, photos, onRetry, isSharedView = false }) => {
+        const photoStripRef = useRef(null);
+        const [shareUrl, setShareUrl] = useState(null);
 
         useEffect(() => {
           if (!isSharedView && photos.length > 0 && window.lzString) {
@@ -362,7 +351,7 @@
           }
         }, [isSharedView, photos, frameConfig.id]);
         
-        const generateCanvasImage = async (): Promise<string | null> => {
+        const generateCanvasImage = async () => {
             const element = photoStripRef.current;
             if (!element) return null;
             
@@ -467,10 +456,10 @@
       };
 
       // --- from App.tsx ---
-      const App: React.FC = () => {
-        const [appState, setAppState] = useState<AppState>(AppState.SELECTING_FRAME);
-        const [selectedFrame, setSelectedFrame] = useState<FrameConfig>(FRAME_OPTIONS[0]);
-        const [capturedPhotos, setCapturedPhotos] = useState<string[]>([]);
+      const App = () => {
+        const [appState, setAppState] = useState(AppState.SELECTING_FRAME);
+        const [selectedFrame, setSelectedFrame] = useState(FRAME_OPTIONS[0]);
+        const [capturedPhotos, setCapturedPhotos] = useState([]);
         const [isInitialized, setIsInitialized] = useState(false);
         const [isSharedView, setIsSharedView] = useState(false);
 
@@ -504,12 +493,12 @@
           }
         }, []);
 
-        const handleFrameSelect = (frame: FrameConfig) => {
+        const handleFrameSelect = (frame) => {
           setSelectedFrame(frame);
           setAppState(AppState.CAPTURING);
         };
 
-        const handleCaptureComplete = (photos: string[]) => {
+        const handleCaptureComplete = (photos) => {
           setCapturedPhotos(photos);
           setAppState(AppState.PREVIEW);
         };
