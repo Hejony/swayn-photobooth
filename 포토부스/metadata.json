@@ -1,0 +1,7 @@
+{
+  "name": "Swayn Photo Booth",
+  "description": "A web application to capture photos with various frames and layouts, inspired by Korean-style photo booths.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
