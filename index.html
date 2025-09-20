@@ -489,7 +489,14 @@
                       },
                       events: {
                           'onReady': (event) => {
+                              event.target.setPlaybackQuality('hd720');
                               event.target.playVideo();
+                          },
+                          'onStateChange': (event) => {
+                              // When a new video in the playlist starts playing, set quality.
+                              if (event.data === window.YT.PlayerState.PLAYING) {
+                                  event.target.setPlaybackQuality('hd720');
+                              }
                           }
                       }
                   });
