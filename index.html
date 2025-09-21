@@ -27,20 +27,22 @@
     "react": "https://esm.sh/react@18.2.0",
     "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
-    "react/": "https://aistudiocdn.com/react@^19.1.1/"
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "qrcode": "https://esm.sh/qrcode@1.5.3",
+    "lz-string": "https://esm.sh/lz-string@1.5.0"
   }
 }
 </script>
   </head>
   <body class="bg-gray-50">
     <div id="root"></div>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <script type="text/babel" data-presets="react,typescript" data-type="module">
       import React, { useState, useEffect, useRef, useCallback } from 'react';
       import ReactDOM from 'react-dom/client';
+      import QRCode from 'qrcode';
+      import lzString from 'lz-string';
 
       // --- from types.ts ---
       const AppState = {
@@ -150,12 +152,12 @@
       );
 
       // --- from components/QRCode.tsx ---
-      const QRCode = ({ value, size = 256 }) => {
+      const QRCodeDisplay = ({ value, size = 256 }) => {
         const canvasRef = useRef(null);
 
         useEffect(() => {
-          if (canvasRef.current && window.QRCode) {
-            window.QRCode.toCanvas(
+          if (canvasRef.current && value) {
+            QRCode.toCanvas(
               canvasRef.current,
               value,
               { width: size, margin: 1 },
@@ -350,12 +352,17 @@
         const [shareUrl, setShareUrl] = useState(null);
 
         useEffect(() => {
-          if (!isSharedView && photos.length > 0 && window.lzString) {
-            const photoData = photos.map(p => p.split(',')[1]);
-            const joinedData = photoData.join('|');
-            const compressed = window.lzString.compressToEncodedURIComponent(joinedData);
-            const url = `${window.location.origin}${window.location.pathname}#preview&frame=${frameConfig.id}&photos=${compressed}`;
-            setShareUrl(url);
+          if (!isSharedView && photos.length > 0) {
+            try {
+              const photoData = photos.map(p => p.split(',')[1]);
+              const joinedData = photoData.join('|');
+              const compressed = lzString.compressToEncodedURIComponent(joinedData);
+              const url = `${window.location.origin}${window.location.pathname}#preview&frame=${frameConfig.id}&photos=${compressed}`;
+              setShareUrl(url);
+            } catch (error) {
+              console.error("Error compressing photo data:", error);
+              setShareUrl(null);
+            }
           }
         }, [isSharedView, photos, frameConfig.id]);
         
@@ -438,7 +445,7 @@
                       <p className="text-gray-600 mb-4 text-sm">스마트폰으로 스캔하세요.</p>
                       {shareUrl ? (
                           <div className="p-3 bg-white rounded-lg inline-block ring-4 ring-brand-secondary/50">
-                              <QRCode value={shareUrl} size={180} />
+                              <QRCodeDisplay value={shareUrl} size={180} />
                           </div>
                       ) : (
                           <div className="w-[204px] h-[204px] bg-gray-100 flex items-center justify-center rounded-lg text-gray-500">
@@ -553,9 +560,9 @@
               const frameId = params.get('frame');
               const compressedPhotos = params.get('photos');
 
-              if (frameId && compressedPhotos && window.lzString) {
+              if (frameId && compressedPhotos) {
                 const frame = FRAME_OPTIONS.find(f => f.id === frameId);
-                const decompressed = window.lzString.decompressFromEncodedURIComponent(compressedPhotos);
+                const decompressed = lzString.decompressFromEncodedURIComponent(compressedPhotos);
                 const photos = decompressed.split('|').map(data => `data:image/jpeg;base64,${data}`);
                 
                 if (frame && photos.length > 0) {
